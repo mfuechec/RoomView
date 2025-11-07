@@ -1,0 +1,100 @@
+.error-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.error-dialog {
+  background: white;
+  border-radius: 12px;
+  padding: 32px;
+  max-width: 500px;
+  width: 90%;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  position: relative;
+  text-align: center;
+}
+
+.error-close {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  background: none;
+  border: none;
+  font-size: 32px;
+  color: #cbd5e0;
+  cursor: pointer;
+  line-height: 1;
+  padding: 0;
+  width: 32px;
+  height: 32px;
+}
+
+.error-close:hover {
+  color: #a0aec0;
+}
+
+.error-icon {
+  font-size: 64px;
+  margin-bottom: 16px;
+}
+
+.error-title {
+  margin: 0 0 12px 0;
+  font-size: 24px;
+  font-weight: 700;
+  color: #2d3748;
+}
+
+.error-message {
+  margin: 0 0 20px 0;
+  color: #4a5568;
+  line-height: 1.6;
+}
+
+.error-suggestions {
+  text-align: left;
+  margin: 20px 0;
+  padding: 16px;
+  background: #f7fafc;
+  border-radius: 8px;
+}
+
+.error-suggestions strong {
+  display: block;
+  margin-bottom: 8px;
+  color: #2d3748;
+}
+
+.error-suggestions ul {
+  margin: 0;
+  padding-left: 20px;
+  color: #4a5568;
+}
+
+.error-suggestions li {
+  margin: 4px 0;
+}
+
+.error-button {
+  padding: 12px 32px;
+  background: #667eea;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.error-button:hover {
+  background: #5a67d8;
+}

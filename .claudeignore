@@ -1,0 +1,54 @@
+# ============================================
+# Claude Code Ignore File
+# Excludes files/folders from Claude Code indexing
+# ============================================
+
+# Dependencies (large, auto-generated)
+node_modules/
+venv/
+env/
+.venv/
+
+# Build outputs
+frontend/dist/
+frontend/build/
+backend/dist/
+*.egg-info/
+
+# Large dataset files
+test_data/blueprints/*.png
+test_data/cubicasa5k/
+*.zip
+temp_extract/
+
+# Keep only essential test blueprints for context
+!test_data/blueprints/simple.png
+!test_data/blueprints/complex.png
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+
+# IDE/Editor
+.vscode/
+.idea/
+
+# Logs
+*.log
+logs/
+
+# OS files
+.DS_Store
+
+# Git
+.git/
+
+# Large binary files
+*.so
+*.dylib
+
+# Coverage/test outputs
+.coverage
+htmlcov/
+.pytest_cache/

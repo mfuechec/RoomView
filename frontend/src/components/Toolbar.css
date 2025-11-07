@@ -1,0 +1,93 @@
+.toolbar {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.toolbar-title {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.toolbar-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.toolbar-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px 16px;
+  border: none;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.toolbar-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.toolbar-button.primary {
+  background: #667eea;
+  color: white;
+}
+
+.toolbar-button.primary:hover:not(:disabled) {
+  background: #5a67d8;
+}
+
+.toolbar-button.secondary {
+  background: #edf2f7;
+  color: #2d3748;
+}
+
+.toolbar-button.secondary:hover:not(:disabled) {
+  background: #e2e8f0;
+}
+
+.toolbar-info {
+  padding: 12px;
+  background: #f7fafc;
+  border-radius: 6px;
+  font-size: 14px;
+}
+
+.toolbar-info-title {
+  margin: 0 0 12px 0;
+  font-size: 14px;
+  font-weight: 600;
+  color: #2d3748;
+}
+
+.toolbar-info-list {
+  margin: 0;
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 8px;
+}
+
+.toolbar-info-list dt {
+  font-weight: 600;
+  color: #4a5568;
+}
+
+.toolbar-info-list dd {
+  margin: 0;
+  color: #2d3748;
+  text-align: right;
+  word-break: break-word;
+}
+
+.toolbar-info-list dd.status {
+  text-transform: capitalize;
+  color: #667eea;
+  font-weight: 600;
+}

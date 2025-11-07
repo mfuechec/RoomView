@@ -1,0 +1,83 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: RoomView - AI-Powered Blueprint Room Detection
+
+Globals:
+  Function:
+    Timeout: 30
+    MemorySize: 2048
+    Runtime: python3.11
+    Environment:
+      Variables:
+        MIN_ROOM_AREA: 1500
+        CONFIDENCE_THRESHOLD: 0.7
+        MAX_ROOMS: 50
+        LOG_LEVEL: INFO
+
+Resources:
+  RoomDetectionFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: RoomViewDetector
+      CodeUri: .
+      Handler: lambda_function.lambda_handler
+      Layers:
+        - !Sub arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:layer:opencv-python311:1
+      Events:
+        DetectAPI:
+          Type: Api
+          Properties:
+            Path: /detect
+            Method: post
+            RestApiId: !Ref RoomViewAPI
+
+  RoomViewAPI:
+    Type: AWS::Serverless::Api
+    Properties:
+      Name: RoomView-API
+      StageName: prod
+      Cors:
+        AllowOrigin: "'*'"
+        AllowHeaders: "'Content-Type,X-Api-Key'"
+        AllowMethods: "'POST,OPTIONS'"
+      DefinitionBody:
+        openapi: 3.0.0
+        info:
+          title: RoomView API
+          version: 1.0.0
+        paths:
+          /detect:
+            post:
+              summary: Detect rooms in blueprint
+              requestBody:
+                required: true
+                content:
+                  multipart/form-data:
+                    schema:
+                      type: object
+                      properties:
+                        blueprint:
+                          type: string
+                          format: binary
+              responses:
+                '200':
+                  description: Success
+                '422':
+                  description: Processing failed
+                '500':
+                  description: Internal error
+
+  RoomDetectionLogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: !Sub /aws/lambda/${RoomDetectionFunction}
+      RetentionInDays: 7
+
+Outputs:
+  APIEndpoint:
+    Description: API Gateway endpoint URL
+    Value: !Sub https://${RoomViewAPI}.execute-api.${AWS::Region}.amazonaws.com/prod/detect
+
+  LambdaFunctionArn:
+    Description: Lambda function ARN
+    Value: !GetAtt RoomDetectionFunction.Arn

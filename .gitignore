@@ -1,0 +1,157 @@
+# ============================================
+# RoomView .gitignore
+# ============================================
+
+# ============================================
+# Sensitive & Credentials
+# ============================================
+.env
+.env.local
+.env.*.local
+kaggle.json
+*.pem
+*.key
+secrets.json
+credentials.json
+
+# ============================================
+# Python
+# ============================================
+# Virtual environments
+venv/
+env/
+ENV/
+.venv
+
+# Python cache
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# Distribution / packaging
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# PyInstaller
+*.manifest
+*.spec
+
+# Unit test / coverage
+htmlcov/
+.tox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+.hypothesis/
+.pytest_cache/
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# pyenv
+.python-version
+
+# ============================================
+# Node.js / Frontend
+# ============================================
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+lerna-debug.log*
+.pnpm-debug.log*
+
+# Frontend build outputs
+frontend/dist/
+frontend/build/
+frontend/.vite/
+
+# ============================================
+# Large Dataset Files
+# ============================================
+# CubiCasa5k dataset (5+ GB)
+*.zip
+cubicasa5k/
+test_data/cubicasa5k/
+temp_extract/
+
+# Keep only a few sample blueprints for demo
+# Exclude large test data
+test_data/blueprints/*.png
+!test_data/blueprints/simple.png
+!test_data/blueprints/complex.png
+!test_data/blueprints/office.png
+!test_data/blueprints/sample_01.png
+!test_data/blueprints/sample_02.png
+!test_data/blueprints/sample_03.png
+
+# Frontend public blueprints - only keep essentials
+frontend/public/sample_blueprints/*.png
+!frontend/public/sample_blueprints/simple.png
+!frontend/public/sample_blueprints/complex.png
+!frontend/public/sample_blueprints/sample_01.png
+
+# Detection outputs (regeneratable)
+*_detected.png
+*_results.json
+
+# ============================================
+# IDE / Editor
+# ============================================
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# ============================================
+# Logs
+# ============================================
+logs/
+*.log
+
+# ============================================
+# AWS / Deployment
+# ============================================
+.aws-sam/
+samconfig.toml
+.chalice/deployments/
+.chalice/venv/
+
+# ============================================
+# OS Generated
+# ============================================
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# ============================================
+# Temporary Files
+# ============================================
+tmp/
+temp/
+*.tmp
+*.temp
