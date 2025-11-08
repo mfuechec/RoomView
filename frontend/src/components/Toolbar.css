@@ -44,6 +44,15 @@
   background: #5a67d8;
 }
 
+.toolbar-button.ground-truth {
+  background: #f6ad55;
+  color: white;
+}
+
+.toolbar-button.ground-truth:hover:not(:disabled) {
+  background: #ed8936;
+}
+
 .toolbar-button.secondary {
   background: #edf2f7;
   color: #2d3748;
@@ -90,4 +99,82 @@
   text-transform: capitalize;
   color: #667eea;
   font-weight: 600;
+}
+
+/* Edit Mode Controls */
+.toolbar-edit-mode {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 12px;
+  background: #f7fafc;
+  border-radius: 6px;
+  border: 2px solid #e2e8f0;
+}
+
+.toolbar-button.edit-active {
+  background: #48bb78;
+  color: white;
+  animation: pulse 2s infinite;
+}
+
+.toolbar-button.edit-active:hover {
+  background: #38a169;
+}
+
+.toolbar-button.edit-inactive {
+  background: #edf2f7;
+  color: #2d3748;
+}
+
+.toolbar-button.edit-inactive:hover {
+  background: #e2e8f0;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.8; }
+}
+
+/* Drawing Tools */
+.drawing-tools {
+  display: flex;
+  gap: 8px;
+  padding: 8px;
+  background: white;
+  border-radius: 4px;
+  border: 1px solid #e2e8f0;
+}
+
+.tool-btn {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px;
+  border: 2px solid #e2e8f0;
+  border-radius: 4px;
+  background: white;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.tool-btn:hover {
+  border-color: #cbd5e0;
+  background: #f7fafc;
+}
+
+.tool-btn.active {
+  border-color: #667eea;
+  background: #edf2f7;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+.tool-btn svg {
+  stroke-width: 2;
+  color: #4a5568;
+}
+
+.tool-btn.active svg {
+  color: #667eea;
 }

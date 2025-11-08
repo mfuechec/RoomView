@@ -7,11 +7,26 @@ import json
 import logging
 import base64
 import time
+import os
 from typing import Dict, Any
 
-# Local imports
-from detection.preprocessing import preprocess_pipeline
-from detection.opencv_detector import detect_rooms_opencv
+# Toggle between detection modes
+# USE_ADAPTIVE_DETECTION=true  - Adaptive (auto-adjusts to blueprint style) - DEFAULT
+# USE_ADAPTIVE_DETECTION=false - Improved (fixed parameters, hierarchical analysis)
+USE_ADAPTIVE = os.environ.get('USE_ADAPTIVE_DETECTION', 'true').lower() == 'true'
+
+# Local imports - conditional based on mode
+if USE_ADAPTIVE:
+    logger = logging.getLogger()
+    logger.info("Using ADAPTIVE detection pipeline (auto-tuning)")
+    from detection.preprocessing_adaptive import preprocess_pipeline_adaptive as preprocess_pipeline
+    from detection.opencv_detector_adaptive import detect_rooms_adaptive as detect_rooms_opencv
+else:
+    logger = logging.getLogger()
+    logger.info("Using IMPROVED detection pipeline (fixed parameters)")
+    from detection.preprocessing_improved import preprocess_pipeline_improved as preprocess_pipeline
+    from detection.opencv_detector_improved import detect_rooms_improved as detect_rooms_opencv
+
 from detection.normalizer import normalize_coordinates
 from utils.validation import validate_image_data
 from utils.error_handling import (
@@ -21,7 +36,6 @@ from utils.error_handling import (
 )
 
 # Configure logging
-logger = logging.getLogger()
 logger.setLevel(logging.INFO)
 
 
@@ -63,13 +77,36 @@ def lambda_handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
 
         # STEP 3: Normalize coordinates
         logger.info(f"Normalizing coordinates for {len(rooms)} rooms")
+        # Use PROCESSED shape because bounding boxes are in resized image coordinates
+        processed_shape = preprocessed['processed'].shape
         normalized_rooms = normalize_coordinates(
             rooms,
-            preprocessed['original_shape']
+            processed_shape
         )
 
-        # Build success response
+        # Build success response with metrics
         processing_time = time.time() - start_time
+
+        # Collect metrics
+        blueprint_style = normalized_rooms[0].get('blueprint_style', 'unknown') if normalized_rooms else 'unknown'
+        avg_confidence = sum(r['confidence_score'] for r in normalized_rooms) / len(normalized_rooms) if normalized_rooms else 0
+
+        # Log structured metrics for CloudWatch analytics
+        logger.info(
+            f"METRICS: "
+            f"rooms={len(normalized_rooms)} "
+            f"style={blueprint_style} "
+            f"time={processing_time:.2f}s "
+            f"resolution={preprocessed['original_shape'][1]}x{preprocessed['original_shape'][0]} "
+            f"avg_confidence={avg_confidence:.2f} "
+            f"mode={'adaptive' if USE_ADAPTIVE else 'improved'}",
+            extra={
+                'rooms_detected': len(normalized_rooms),
+                'processing_time': processing_time,
+                'blueprint_style': blueprint_style,
+                'avg_confidence': avg_confidence
+            }
+        )
 
         response_body = {
             'status': 'success',
@@ -80,13 +117,13 @@ def lambda_handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                 'height_pixels': preprocessed['original_shape'][0]
             },
             'total_rooms_detected': len(normalized_rooms),
+            'detection_metadata': {
+                'blueprint_style': blueprint_style,
+                'detection_mode': 'adaptive' if USE_ADAPTIVE else 'improved',
+                'average_confidence': round(avg_confidence, 2)
+            },
             'rooms': normalized_rooms
         }
-
-        logger.info(f"Detection completed successfully in {processing_time:.2f}s", extra={
-            'rooms_detected': len(normalized_rooms),
-            'processing_time': processing_time
-        })
 
         return {
             'statusCode': 200,

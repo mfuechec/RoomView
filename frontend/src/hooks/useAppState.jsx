@@ -15,6 +15,8 @@ const initialState = {
   editedRooms: [],
   processingStatus: 'idle', // 'idle' | 'uploading' | 'processing' | 'complete' | 'error'
   selectedRoomId: null,
+  editMode: false, // NEW: Edit mode toggle
+  drawingTool: 'box', // NEW: 'box' | 'polygon' | 'select'
   error: null,
   sessionId: uuidv4(),
   lastSaved: null
@@ -89,6 +91,19 @@ function appReducer(state, action) {
       return {
         ...state,
         error: null
+      }
+
+    case 'TOGGLE_EDIT_MODE':
+      return {
+        ...state,
+        editMode: !state.editMode,
+        selectedRoomId: null // Deselect when toggling
+      }
+
+    case 'SET_DRAWING_TOOL':
+      return {
+        ...state,
+        drawingTool: action.payload
       }
 
     case 'RESET':

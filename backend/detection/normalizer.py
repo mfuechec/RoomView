@@ -38,6 +38,15 @@ def normalize_coordinates(rooms: List[Dict], original_shape: Tuple[int, int, ...
         # Keep original pixels for debugging
         room['bounding_box_pixels'] = [x_min, y_min, x_max, y_max]
 
+        # Normalize polygon coordinates if present
+        if 'polygon' in room:
+            room['polygon_normalized'] = [
+                [round(x / width, 4), round(y / height, 4)]
+                for x, y in room['polygon']
+            ]
+            # Keep original pixels for debugging
+            room['polygon_pixels'] = room['polygon']
+
         # Calculate normalized area
         norm_w = room['bounding_box_normalized'][2] - room['bounding_box_normalized'][0]
         norm_h = room['bounding_box_normalized'][3] - room['bounding_box_normalized'][1]

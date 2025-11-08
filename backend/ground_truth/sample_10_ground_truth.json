@@ -1,0 +1,163 @@
+{
+  "sample_id": "sample_10",
+  "blueprint_type": "single_floor",
+  "created_at": "2025-11-08T00:10:34.439Z",
+  "total_rooms": 9,
+  "image_dimensions": {
+    "width": 0,
+    "height": 0
+  },
+  "rooms": [
+    {
+      "id": "room_1762560579796",
+      "bounding_box_normalized": [
+        0.7326732673267327,
+        0.20474324218136095,
+        0.8528995756718529,
+        0.7634886256482791
+      ],
+      "polygon_normalized": null,
+      "confidence_score": 1,
+      "isUserCreated": true,
+      "isUserVerified": true,
+      "type_hint": "room"
+    },
+    {
+      "id": "room_1762560585062",
+      "bounding_box_normalized": [
+        0.11032531824611033,
+        0.20474324218136095,
+        0.33097595473833097,
+        0.42712016737388026
+      ],
+      "polygon_normalized": null,
+      "confidence_score": 1,
+      "isUserCreated": true,
+      "isUserVerified": true,
+      "type_hint": "room"
+    },
+    {
+      "id": "room_1762560590652",
+      "bounding_box_normalized": [
+        0.46534653465346537,
+        0.5411117004557598,
+        0.7114568599717115,
+        0.7690947666195191
+      ],
+      "polygon_normalized": null,
+      "confidence_score": 1,
+      "isUserCreated": true,
+      "isUserVerified": true,
+      "type_hint": "room"
+    },
+    {
+      "id": "room_1762560600355",
+      "bounding_box_normalized": [
+        0.5190947666195191,
+        0.20287452852428098,
+        0.7157001414427157,
+        0.5317681321703599
+      ],
+      "polygon_normalized": null,
+      "confidence_score": 1,
+      "isUserCreated": true,
+      "isUserVerified": true,
+      "type_hint": "room"
+    },
+    {
+      "id": "room_1762560604764",
+      "bounding_box_normalized": [
+        0.33804809052333806,
+        0.20661195583844094,
+        0.5190947666195191,
+        0.5317681321703599
+      ],
+      "polygon_normalized": null,
+      "confidence_score": 1,
+      "isUserCreated": true,
+      "isUserVerified": true,
+      "type_hint": "room"
+    },
+    {
+      "id": "room_1762560608154",
+      "bounding_box_normalized": [
+        0.33663366336633666,
+        0.5392429867986799,
+        0.45685997171145687,
+        0.7690947666195191
+      ],
+      "polygon_normalized": null,
+      "confidence_score": 1,
+      "isUserCreated": true,
+      "isUserVerified": true,
+      "type_hint": "room"
+    },
+    {
+      "id": "room_1762560611298",
+      "bounding_box_normalized": [
+        0.2347949080622348,
+        0.6345473833097596,
+        0.32531824611032534,
+        0.7616199119911992
+      ],
+      "polygon_normalized": null,
+      "confidence_score": 1,
+      "isUserCreated": true,
+      "isUserVerified": true,
+      "type_hint": "room"
+    },
+    {
+      "id": "room_1762560614275",
+      "bounding_box_normalized": [
+        0.23055162659123055,
+        0.5411117004557598,
+        0.33097595473833097,
+        0.6214663877101996
+      ],
+      "polygon_normalized": null,
+      "confidence_score": 1,
+      "isUserCreated": true,
+      "isUserVerified": true,
+      "type_hint": "room"
+    },
+    {
+      "id": "room_1762560629863",
+      "bounding_box_normalized": [
+        0.10891089108910891,
+        0.4364637356592802,
+        0.3338048090523338,
+        0.7653573393053591
+      ],
+      "polygon_normalized": [
+        [
+          0.3323903818953324,
+          0.4364637356592802
+        ],
+        [
+          0.3338048090523338,
+          0.5317681321703599
+        ],
+        [
+          0.22206506364922207,
+          0.5317681321703599
+        ],
+        [
+          0.22065063649222066,
+          0.7634886256482791
+        ],
+        [
+          0.10891089108910891,
+          0.7653573393053591
+        ],
+        [
+          0.11173974540311174,
+          0.4364637356592802
+        ]
+      ],
+      "confidence_score": 1,
+      "isUserCreated": true,
+      "isUserVerified": true,
+      "type_hint": "room"
+    }
+  ]
+}
