@@ -164,10 +164,13 @@ def detect_rooms_adaptive(preprocessed: dict) -> List[Dict]:
 
     logger.info(f"Found {len(candidate_rooms)} candidate rooms from hierarchy")
 
-    # FALLBACK: If hierarchy found nothing, use size-based approach
-    if len(candidate_rooms) == 0:
-        logger.warning("Hierarchy found 0 rooms - using FALLBACK size-based detection")
-        candidate_rooms = extract_rooms_by_size(contours, config)
+    # FALLBACK: If hierarchy found few rooms, supplement with contour-based approach
+    if len(candidate_rooms) < 3:
+        logger.warning(f"Hierarchy found only {len(candidate_rooms)} rooms - using HYBRID approach")
+        size_based_rooms = extract_rooms_by_size(contours, config)
+        # Merge and deduplicate
+        candidate_rooms = list(set(candidate_rooms + size_based_rooms))
+        logger.info(f"After hybrid approach: {len(candidate_rooms)} candidate rooms")
 
     # STEP 3: Filter by Size and Shape (using SCORE-BASED filtering)
     logger.info("Step 3: Filtering by size and shape using SCORE-BASED approach")
@@ -297,7 +300,9 @@ def filter_by_room_characteristics_adaptive(
     """
 
     valid_rooms = []
-    min_score_threshold = 0.5  # Tunable: accept rooms with score > 0.5
+    # LOWERED from 0.5 to 0.3 based on ground truth analysis
+    # Baseline showed severe under-detection (only 36/78 rooms found)
+    min_score_threshold = 0.3
 
     for idx in candidate_indices:
         contour = contours[idx]

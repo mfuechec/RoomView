@@ -198,49 +198,52 @@ def get_adaptive_parameters(style: str, wall_thickness: float,
     Key insight: Different blueprint styles need different parameters
     """
 
-    # Base parameters (conservative defaults)
+    # Base parameters - LOWERED based on ground truth analysis
+    # Baseline evaluation showed severe under-detection (only 6/78 rooms matched)
+    # REDUCED morph_close_size to prevent merging adjacent rooms
     params = {
         'morph_open_size': 5,
-        'min_room_area_pixels': 5000,
+        'min_room_area_pixels': 2000,  # REDUCED from 5000
         'min_solidity': 0.6,
         'denoise_strength': 10,
-        'morph_close_size': 3,
+        'morph_close_size': 2,  # REDUCED from 3 - was merging rooms!
     }
 
     # Adjust based on style
     if style == 'clean_cad':
         # Clean blueprints: minimal opening, but fill hollow rooms
         params['morph_open_size'] = 3
-        params['min_room_area_pixels'] = 4000
+        params['min_room_area_pixels'] = 1500  # REDUCED from 4000
         params['denoise_strength'] = 5
-        params['morph_close_size'] = 7  # Aggressive closing to fill thick-walled rooms
+        params['morph_close_size'] = 3  # REDUCED from 7 - was merging rooms!
         params['fill_hollow_rooms'] = True  # Enable hollow room filling
 
     elif style == 'detailed_cad':
         # Lots of details: aggressive filtering
         params['morph_open_size'] = 9  # Remove more details
-        params['min_room_area_pixels'] = 8000  # Larger min size
+        params['min_room_area_pixels'] = 2500  # REDUCED from 8000
         params['denoise_strength'] = 10
+        params['morph_close_size'] = 2  # Keep low to avoid merging rooms
         params['fill_hollow_rooms'] = True  # Enable hollow room filling for thick walls
 
     elif style == 'simple_line_drawing':
         # Thin walls: gentle processing to preserve structure
         params['morph_open_size'] = 2  # Don't erode thin walls
-        params['min_room_area_pixels'] = 3000
-        params['morph_close_size'] = 5  # More closing to connect thin walls
+        params['min_room_area_pixels'] = 1200  # REDUCED from 3000
+        params['morph_close_size'] = 2  # REDUCED from 5 - was merging rooms!
         params['denoise_strength'] = 5
 
     elif style == 'detailed_line_drawing':
         # Thin walls + details: balanced approach
         params['morph_open_size'] = 5
-        params['min_room_area_pixels'] = 5000
+        params['min_room_area_pixels'] = 2000  # REDUCED from 5000
         params['morph_close_size'] = 4
 
     elif style == 'scanned':
         # Noisy scans: heavy denoising
         params['morph_open_size'] = 6
         params['denoise_strength'] = 15
-        params['min_room_area_pixels'] = 6000
+        params['min_room_area_pixels'] = 2500  # REDUCED from 6000
 
     # Fine-tune based on measurements
 

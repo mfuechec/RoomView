@@ -11,6 +11,7 @@ import logging
 
 from detection.blueprint_analyzer import analyze_blueprint_characteristics
 from detection.debug_visualizer import debug_viz
+from detection.text_filter import filter_text_regions
 
 logger = logging.getLogger(__name__)
 
@@ -108,6 +109,11 @@ def preprocess_pipeline_adaptive(image_data: bytes) -> dict:
     logger.info("Stage 7: Morphological operations (ADAPTIVE)")
     processed = apply_adaptive_morphology(binary, adaptive_params)
     debug_viz.save('3_morphology', processed, "After adaptive morphology")
+
+    # STAGE 8: Text Filtering (NEW - Context-Aware!)
+    logger.info("Stage 8: Filtering text annotations (context-aware)")
+    processed = filter_text_regions(processed, aggressive=False)
+    debug_viz.save('4_text_filtered', processed, "After text filtering")
 
     scale_factor = original_shape[0] / processed.shape[0]
 
