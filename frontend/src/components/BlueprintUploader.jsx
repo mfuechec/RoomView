@@ -51,7 +51,7 @@ function BlueprintUploader() {
 
         dispatch({
           type: 'SET_DETECTED_ROOMS',
-          payload: result.rooms
+          payload: result  // Pass entire result with rooms and doorways
         })
         dispatch({ type: 'SET_STATUS', payload: 'complete' })
       } catch (error) {

@@ -17,6 +17,7 @@ from detection.opencv_detector_improved import (
     DETECTION_CONFIG
 )
 from detection.debug_visualizer import debug_viz
+from detection.doorway_detector import detect_doorways
 
 logger = logging.getLogger(__name__)
 
@@ -245,6 +246,11 @@ def detect_rooms_adaptive(preprocessed: dict) -> List[Dict]:
 
     logger.info(f"ADAPTIVE detection complete: {len(rooms)} rooms detected")
 
+    # STEP 8: Detect Doorways (NEW!)
+    logger.info("Step 8: Detecting doorways")
+    doorways = detect_doorways(image, rooms)
+    logger.info(f"Detected {len(doorways)} doorways")
+
     # Add metadata about detection
     for room in rooms:
         room['detection_mode'] = 'adaptive'
@@ -253,7 +259,11 @@ def detect_rooms_adaptive(preprocessed: dict) -> List[Dict]:
     # Debug visualization - save final result
     debug_viz.save_with_bboxes('4_final_detection', image, rooms)
 
-    return rooms
+    # Return rooms and doorways
+    return {
+        'rooms': rooms,
+        'doorways': doorways
+    }
 
 
 def extract_rooms_by_size(contours: List, config: Dict) -> List[int]:

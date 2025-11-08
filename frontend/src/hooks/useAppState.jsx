@@ -13,6 +13,7 @@ const initialState = {
   },
   detectedRooms: [],
   editedRooms: [],
+  doorways: [], // NEW: Detected doorways
   processingStatus: 'idle', // 'idle' | 'uploading' | 'processing' | 'complete' | 'error'
   selectedRoomId: null,
   editMode: false, // NEW: Edit mode toggle
@@ -40,8 +41,9 @@ function appReducer(state, action) {
     case 'SET_DETECTED_ROOMS':
       return {
         ...state,
-        detectedRooms: action.payload,
-        editedRooms: action.payload,
+        detectedRooms: action.payload.rooms || action.payload,  // Handle both old and new format
+        editedRooms: action.payload.rooms || action.payload,
+        doorways: action.payload.doorways || [],  // Add doorways
         processingStatus: 'complete'
       }
 

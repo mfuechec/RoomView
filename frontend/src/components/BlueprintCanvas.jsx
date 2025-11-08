@@ -59,6 +59,11 @@ function BlueprintCanvas() {
         drawRooms(ctx, state.editedRooms, img.width, img.height, x, y, scale)
       }
 
+      // Draw doorways
+      if (state.doorways && state.doorways.length > 0) {
+        drawDoorways(ctx, state.doorways, img.width, img.height, x, y, scale)
+      }
+
       // Draw current drawing rectangle
       if (currentDrawRect) {
         ctx.strokeStyle = '#f56565'
@@ -106,7 +111,24 @@ function BlueprintCanvas() {
     }
 
     img.src = state.blueprint.dataUrl
-  }, [state.blueprint.dataUrl, state.editedRooms, state.selectedRoomId, currentDrawRect, polygonPoints, currentMousePos])
+  }, [state.blueprint.dataUrl, state.editedRooms, state.doorways, state.selectedRoomId, currentDrawRect, polygonPoints, currentMousePos])
+
+  // Color palette for room overlays (distinct, vibrant colors)
+  const getColorForRoom = (index) => {
+    const palette = [
+      { stroke: '#667eea', fill: 'rgba(102, 126, 234, 0.15)' },  // Blue
+      { stroke: '#f56565', fill: 'rgba(245, 101, 101, 0.15)' },  // Red
+      { stroke: '#48bb78', fill: 'rgba(72, 187, 120, 0.15)' },   // Green
+      { stroke: '#ed8936', fill: 'rgba(237, 137, 54, 0.15)' },   // Orange
+      { stroke: '#9f7aea', fill: 'rgba(159, 122, 234, 0.15)' },  // Purple
+      { stroke: '#38b2ac', fill: 'rgba(56, 178, 172, 0.15)' },   // Teal
+      { stroke: '#ecc94b', fill: 'rgba(236, 201, 75, 0.15)' },   // Yellow
+      { stroke: '#ed64a6', fill: 'rgba(237, 100, 166, 0.15)' },  // Pink
+      { stroke: '#4299e1', fill: 'rgba(66, 153, 225, 0.15)' },   // Light Blue
+      { stroke: '#f6ad55', fill: 'rgba(246, 173, 85, 0.15)' },   // Peach
+    ]
+    return palette[index % palette.length]
+  }
 
   const drawRooms = (ctx, rooms, imgWidth, imgHeight, offsetX, offsetY, scale) => {
     rooms.forEach((room, index) => {
@@ -120,10 +142,15 @@ function BlueprintCanvas() {
       const height = (yMax - yMin) * imgHeight * scale
 
       const isSelected = room.id === state.selectedRoomId
-      const strokeColor = room.isUserCreated ? '#f56565' : '#667eea'
-      let fillColor = room.isUserCreated ? 'rgba(245, 101, 101, 0.1)' : 'rgba(102, 126, 234, 0.1)'
+
+      // Get unique color for this room based on index
+      const colors = getColorForRoom(index)
+      let strokeColor = colors.stroke
+      let fillColor = colors.fill
+
+      // Override with green highlight if selected
       if (isSelected) {
-        fillColor = 'rgba(72, 187, 120, 0.2)' // Green highlight for selected
+        fillColor = 'rgba(72, 187, 120, 0.3)' // Brighter green for selected
       }
 
       // Check if room has polygon data
@@ -179,6 +206,45 @@ function BlueprintCanvas() {
         ctx.fillRect(x + width - handleSize / 2, y - handleSize / 2, handleSize, handleSize)
         ctx.fillRect(x - handleSize / 2, y + height - handleSize / 2, handleSize, handleSize)
         ctx.fillRect(x + width - handleSize / 2, y + height - handleSize / 2, handleSize, handleSize)
+      }
+    })
+  }
+
+  const drawDoorways = (ctx, doorways, imgWidth, imgHeight, offsetX, offsetY, scale) => {
+    doorways.forEach((doorway) => {
+      if (!doorway.center_normalized) return
+
+      const [centerX, centerY] = doorway.center_normalized
+      const cx = offsetX + centerX * imgWidth * scale
+      const cy = offsetY + centerY * imgHeight * scale
+
+      // Draw based on doorway type
+      if (doorway.type === 'arc' && doorway.radius_normalized) {
+        // Arc doorway: draw as red arc circle showing door swing
+        const radius = doorway.radius_normalized * imgWidth * scale
+
+        ctx.strokeStyle = '#f56565'
+        ctx.lineWidth = 2
+        ctx.setLineDash([4, 4])
+        ctx.beginPath()
+        ctx.arc(cx, cy, radius, 0, 2 * Math.PI)
+        ctx.stroke()
+        ctx.setLineDash([])
+
+        // Draw center point
+        ctx.fillStyle = '#f56565'
+        ctx.beginPath()
+        ctx.arc(cx, cy, 4, 0, 2 * Math.PI)
+        ctx.fill()
+      } else {
+        // Gap doorway: draw as solid red circle marker
+        ctx.fillStyle = '#f56565'
+        ctx.strokeStyle = '#c53030'
+        ctx.lineWidth = 1.5
+        ctx.beginPath()
+        ctx.arc(cx, cy, 6, 0, 2 * Math.PI)
+        ctx.fill()
+        ctx.stroke()
       }
     })
   }

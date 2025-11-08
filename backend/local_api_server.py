@@ -53,7 +53,14 @@ logger = logging.getLogger(__name__)
 
 # Create Flask app
 app = Flask(__name__)
-CORS(app)  # Enable CORS for frontend
+# Enable CORS for all origins (development mode)
+CORS(app, resources={
+    r"/*": {
+        "origins": "*",
+        "methods": ["GET", "POST", "OPTIONS"],
+        "allow_headers": ["Content-Type"]
+    }
+})
 
 # Configuration
 PORT = int(os.environ.get('PORT', 3000))
@@ -105,19 +112,32 @@ def detect():
 
         # STEP 2: Detect rooms
         logger.info("Starting detection")
-        rooms = detect_rooms_opencv(preprocessed)
+        detection_result = detect_rooms_opencv(preprocessed)
+
+        # Handle both old format (list) and new format (dict with rooms/doorways)
+        if isinstance(detection_result, dict):
+            rooms = detection_result.get('rooms', [])
+            doorways = detection_result.get('doorways', [])
+        else:
+            # Backward compatibility: old format returned list directly
+            rooms = detection_result
+            doorways = []
 
         if not rooms:
             raise DetectionFailedError("No rooms detected in blueprint")
 
         # STEP 3: Normalize coordinates
-        logger.info(f"Normalizing {len(rooms)} rooms")
+        logger.info(f"Normalizing {len(rooms)} rooms and {len(doorways)} doorways")
         # Use PROCESSED shape because bounding boxes are in resized image coordinates
         processed_shape = preprocessed['processed'].shape
         normalized_rooms = normalize_coordinates(
             rooms,
             processed_shape
         )
+        normalized_doorways = normalize_coordinates(
+            doorways,
+            processed_shape
+        ) if doorways else []
 
         # Build response
         processing_time = time.time() - start_time
@@ -146,12 +166,14 @@ def detect():
                 'height_pixels': preprocessed['original_shape'][0]
             },
             'total_rooms_detected': len(normalized_rooms),
+            'total_doorways_detected': len(normalized_doorways),
             'detection_metadata': {
                 'blueprint_style': blueprint_style,
                 'detection_mode': 'adaptive' if USE_ADAPTIVE else 'improved',
                 'average_confidence': round(avg_confidence, 2)
             },
-            'rooms': normalized_rooms
+            'rooms': normalized_rooms,
+            'doorways': normalized_doorways
         }
 
         logger.info(f"✅ Detection complete: {len(rooms)} rooms in {processing_time:.2f}s")

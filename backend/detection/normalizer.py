@@ -9,52 +9,95 @@ import logging
 logger = logging.getLogger(__name__)
 
 
-def normalize_coordinates(rooms: List[Dict], original_shape: Tuple[int, int, ...]) -> List[Dict]:
+def normalize_coordinates(items: List[Dict], original_shape: Tuple[int, int, ...]) -> List[Dict]:
     """
     Convert pixel coordinates to normalized 0.0-1.0 range
 
+    Works for both rooms and doorways
+
     Args:
-        rooms: List of room dictionaries with 'bounding_box' in pixels
+        items: List of room/doorway dictionaries with coordinates in pixels
         original_shape: Original image shape (height, width, ...)
 
     Returns:
-        List of rooms with normalized coordinates added
+        List of items with normalized coordinates added
     """
     height, width = original_shape[:2]
 
-    logger.info(f"Normalizing coordinates for {len(rooms)} rooms (image: {width}x{height})")
+    logger.info(f"Normalizing coordinates for {len(items)} items (image: {width}x{height})")
 
-    for room in rooms:
-        x_min, y_min, x_max, y_max = room['bounding_box']
+    # Convert all numpy types first
+    items = [_convert_numpy_types(item) for item in items]
 
-        # Normalize to 0.0-1.0 range
-        room['bounding_box_normalized'] = [
-            round(x_min / width, 4),   # x_min
-            round(y_min / height, 4),  # y_min
-            round(x_max / width, 4),   # x_max
-            round(y_max / height, 4)   # y_max
-        ]
+    for item in items:
+        # Handle rooms (have bounding_box)
+        if 'bounding_box' in item:
+            x_min, y_min, x_max, y_max = item['bounding_box']
 
-        # Keep original pixels for debugging
-        room['bounding_box_pixels'] = [x_min, y_min, x_max, y_max]
-
-        # Normalize polygon coordinates if present
-        if 'polygon' in room:
-            room['polygon_normalized'] = [
-                [round(x / width, 4), round(y / height, 4)]
-                for x, y in room['polygon']
+            # Normalize to 0.0-1.0 range
+            item['bounding_box_normalized'] = [
+                round(float(x_min) / width, 4),   # x_min
+                round(float(y_min) / height, 4),  # y_min
+                round(float(x_max) / width, 4),   # x_max
+                round(float(y_max) / height, 4)   # y_max
             ]
-            # Keep original pixels for debugging
-            room['polygon_pixels'] = room['polygon']
 
-        # Calculate normalized area
-        norm_w = room['bounding_box_normalized'][2] - room['bounding_box_normalized'][0]
-        norm_h = room['bounding_box_normalized'][3] - room['bounding_box_normalized'][1]
-        room['area_normalized'] = round(norm_w * norm_h, 6)
+            # Keep original pixels for debugging
+            item['bounding_box_pixels'] = [int(x_min), int(y_min), int(x_max), int(y_max)]
+
+            # Normalize polygon coordinates if present
+            if 'polygon' in item:
+                item['polygon_normalized'] = [
+                    [round(float(x) / width, 4), round(float(y) / height, 4)]
+                    for x, y in item['polygon']
+                ]
+                # Keep original pixels for debugging
+                item['polygon_pixels'] = item['polygon']
+
+            # Calculate normalized area for rooms
+            if 'area_pixels' not in item or item.get('type') != 'gap':
+                norm_w = item['bounding_box_normalized'][2] - item['bounding_box_normalized'][0]
+                norm_h = item['bounding_box_normalized'][3] - item['bounding_box_normalized'][1]
+                item['area_normalized'] = round(norm_w * norm_h, 6)
+
+        # Handle doorways (have center)
+        if 'center' in item:
+            cx, cy = item['center']
+            item['center_normalized'] = [
+                round(float(cx) / width, 4),
+                round(float(cy) / height, 4)
+            ]
+            item['center_pixels'] = [int(cx), int(cy)]
+
+        # Normalize radius if present (arcs)
+        if 'radius' in item:
+            item['radius_pixels'] = int(item['radius'])
+            # Normalize relative to image width
+            item['radius_normalized'] = round(float(item['radius']) / width, 4)
 
     logger.info("Coordinate normalization complete")
 
-    return rooms
+    return items
+
+
+def _convert_numpy_types(obj):
+    """
+    Recursively convert numpy types to Python native types for JSON serialization
+    """
+    import numpy as np
+
+    if isinstance(obj, dict):
+        return {k: _convert_numpy_types(v) for k, v in obj.items()}
+    elif isinstance(obj, list):
+        return [_convert_numpy_types(item) for item in obj]
+    elif isinstance(obj, (np.integer, np.int64, np.int32, np.int16, np.int8)):
+        return int(obj)
+    elif isinstance(obj, (np.floating, np.float64, np.float32)):
+        return float(obj)
+    elif isinstance(obj, np.ndarray):
+        return obj.tolist()
+    else:
+        return obj
 
 
 def denormalize_coordinates(
